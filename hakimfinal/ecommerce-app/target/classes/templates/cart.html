@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>Shopping Cart - ShopSmart</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div th:replace="fragments/layout :: alerts"></div>
+    
+    <div class="content-wrapper py-5">
+        <div class="container">
+            <h1 class="mb-4">Shopping Cart</h1>
+            
+            <div th:if="${cart == null || cart.items.isEmpty()}" class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+                </div>
+                <h3>Your cart is empty</h3>
+                <p class="text-muted">Looks like you haven't added any items to your cart yet.</p>
+                <a th:href="@{/shop}" class="btn btn-primary mt-3">Continue Shopping</a>
+            </div>
+            
+            <div th:unless="${cart == null || cart.items.isEmpty()}" class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Cart Items (<span th:text="${cart.items.size()}">0</span>)</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="cart-item p-3 border-bottom" th:each="item : ${cart.items}">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" 
+                                             src="/images/products/placeholder.jpg" alt="Product Image"
+                                             class="img-fluid rounded">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h5 th:text="${item.product.name}">Product Name</h5>
+                                        <p class="text-muted" th:if="${item.product.category != null}" 
+                                           th:text="${item.product.category.name}">Category</p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="price" th:text="${'$' + #numbers.formatDecimal(item.product.price, 1, 2)}">$0.00</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <form th:action="@{/cart/update}" method="post" class="d-flex align-items-center">
+                                            <input type="hidden" name="cartItemId" th:value="${item.id}">
+                                            <input type="number" name="quantity" th:value="${item.quantity}" 
+                                                   class="form-control form-control-sm" min="1" 
+                                                   th:max="${item.product.stockQuantity}" style="width: 70px;"
+                                                   onchange="this.form.submit()">
+                                        </form>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="price fw-bold mb-2" 
+                                                  th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}">$0.00</span>
+                                            <form th:action="@{/cart/remove}" method="post">
+                                                <input type="hidden" name="cartItemId" th:value="${item.id}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i> Remove
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{/shop}" class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                                </a>
+                                <form th:action="@{/cart/clear}" method="post">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash me-2"></i>Clear Cart
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Subtotal</span>
+                                <span class="fw-bold" th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 2)}">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Shipping</span>
+                                <span class="fw-bold">Free</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="fw-bold">Total</span>
+                                <span class="price fw-bold" th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 2)}">$0.00</span>
+                            </div>
+                            <div class="d-grid">
+                                <a th:href="@{/checkout}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

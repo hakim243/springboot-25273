@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>My Profile - ShopSmart</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="content-wrapper py-5">
+        <div class="container">
+            <div class="row">
+                <!-- User Profile Information -->
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="m-0">My Profile</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Alert Messages -->
+                            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                                <span th:text="${successMessage}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span th:text="${errorMessage}"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                    <div class="avatar-circle bg-primary text-white mx-auto d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; border-radius: 50%;">
+                                        <span style="font-size: 60px;" th:text="${#strings.substring(user.firstName, 0, 1) + #strings.substring(user.lastName, 0, 1)}"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <h3 th:text="${user.firstName + ' ' + user.lastName}"></h3>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        <span th:text="${user.email}"></span>
+                                    </p>
+                                    <p class="text-muted mb-2" th:if="${user.phoneNumber != null}">
+                                        <i class="fas fa-phone me-2"></i>
+                                        <span th:text="${user.phoneNumber}"></span>
+                                    </p>
+                                    <p class="text-muted mb-2" th:if="${user.address != null}">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <span th:text="${user.address}"></span>
+                                    </p>
+                                    <p class="text-muted">
+                                        <i class="fas fa-user-shield me-2"></i>
+                                        Role: <span th:each="role, iterStat : ${user.roles}" 
+                                                   th:text="${role.name + (!iterStat.last ? ', ' : '')}"></span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Back to Home
+                                </a>
+                                <a th:href="@{/order/history}" class="btn btn-primary">
+                                    <i class="fas fa-shopping-bag me-1"></i> My Orders
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

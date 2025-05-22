@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>Order Detail - ShopSmart</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div th:replace="fragments/layout :: alerts"></div>
+    
+    <div class="content-wrapper py-5">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/order}">My Orders</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${'Order #' + order.id}">Order #123</li>
+                </ol>
+            </nav>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <!-- Order Details -->
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Order Details</h5>
+                            <span class="badge" th:classappend="${
+                                order.status == T(com.ecommerce.model.Order.OrderStatus).PENDING ? 'bg-warning' : 
+                                order.status == T(com.ecommerce.model.Order.OrderStatus).PROCESSING ? 'bg-info' :
+                                order.status == T(com.ecommerce.model.Order.OrderStatus).SHIPPED ? 'bg-primary' :
+                                order.status == T(com.ecommerce.model.Order.OrderStatus).DELIVERED ? 'bg-success' :
+                                'bg-danger'}" th:text="${order.status}">Status</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Order Number:</strong> <span th:text="${'#' + order.id}">123</span></p>
+                                    <p class="mb-1"><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy HH:mm')}">Jan 1, 2023</span></p>
+                                    <p class="mb-1"><strong>Payment Method:</strong> <span th:text="${order.paymentMethod}">Credit Card</span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Name:</strong> <span th:text="${order.user.firstName + ' ' + order.user.lastName}">John Doe</span></p>
+                                    <p class="mb-1"><strong>Email:</strong> <span th:text="${order.user.email}">john@example.com</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Shipping Address</h6>
+                                    <p th:text="${order.shippingAddress}">123 Main St, City, State, ZIP</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Billing Address</h6>
+                                    <p th:text="${order.billingAddress}">123 Main St, City, State, ZIP</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Order Items</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item : ${order.orderItems}">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}"
+                                                         src="/images/products/placeholder.jpg" alt="Product Image"
+                                                         class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <div>
+                                                        <p class="mb-0" th:text="${item.product.name}">Product Name</p>
+                                                        <small class="text-muted" th:if="${item.product.category != null}" 
+                                                               th:text="${item.product.category.name}">Category</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td th:text="${'$' + #numbers.formatDecimal(item.price, 1, 2)}">$0.00</td>
+                                            <td th:text="${item.quantity}">1</td>
+                                            <td class="text-end price" th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}">$0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <!-- Order Summary -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span class="fw-bold" th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 2)}">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping</span>
+                                <span class="fw-bold">Free</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax</span>
+                                <span class="fw-bold">$0.00</span>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold">Total</span>
+                                <span class="price fw-bold" th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 2)}">$0.00</span>
+                            </div>
+                            
+                            <!-- Order Status Timeline -->
+                            <div class="order-timeline mt-4">
+                                <h6>Order Status</h6>
+                                <ul class="list-unstyled mt-3">
+                                    <li class="d-flex mb-3" th:classappend="${order.status.name() == 'PENDING' || order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED' ? 'text-success' : ''}">
+                                        <i class="fas fa-check-circle me-2 mt-1"></i>
+                                        <div>
+                                            <strong>Order Placed</strong>
+                                            <p class="mb-0 small text-muted" th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy HH:mm')}">Jan 1, 2023</p>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-3" th:classappend="${order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED' ? 'text-success' : 'text-muted'}">
+                                        <i class="fas fa-circle me-2 mt-1" th:classappend="${order.status.name() == 'PROCESSING' || order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED' ? 'fa-check-circle' : ''}"></i>
+                                        <div>
+                                            <strong>Processing</strong>
+                                            <p class="mb-0 small">Your order is being processed</p>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex mb-3" th:classappend="${order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED' ? 'text-success' : 'text-muted'}">
+                                        <i class="fas fa-circle me-2 mt-1" th:classappend="${order.status.name() == 'SHIPPED' || order.status.name() == 'DELIVERED' ? 'fa-check-circle' : ''}"></i>
+                                        <div>
+                                            <strong>Shipped</strong>
+                                            <p class="mb-0 small">Your order has been shipped</p>
+                                        </div>
+                                    </li>
+                                    <li class="d-flex" th:classappend="${order.status.name() == 'DELIVERED' ? 'text-success' : 'text-muted'}">
+                                        <i class="fas fa-circle me-2 mt-1" th:classappend="${order.status.name() == 'DELIVERED' ? 'fa-check-circle' : ''}"></i>
+                                        <div>
+                                            <strong>Delivered</strong>
+                                            <p class="mb-0 small">Your order has been delivered</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-4">
+                        <a th:href="@{/order}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

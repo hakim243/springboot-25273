@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>My Orders - ShopSmart</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div th:replace="fragments/layout :: alerts"></div>
+    
+    <div class="content-wrapper py-5">
+        <div class="container">
+            <h1 class="mb-4">My Orders</h1>
+            
+            <div th:if="${orders.empty}" class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-shopping-bag fa-4x text-muted"></i>
+                </div>
+                <h3>You haven't placed any orders yet</h3>
+                <p class="text-muted">Your order history will appear here once you've made a purchase.</p>
+                <a th:href="@{/shop}" class="btn btn-primary mt-3">Start Shopping</a>
+            </div>
+            
+            <div th:unless="${orders.empty}" class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="order : ${orders}">
+                                    <td th:text="${'#' + order.id}">Order ID</td>
+                                    <td th:text="${#temporals.format(order.orderDate, 'MMM dd, yyyy HH:mm')}">Date</td>
+                                    <td th:text="${order.orderItems.size()}">Items</td>
+                                    <td class="price" th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 2)}">Total</td>
+                                    <td>
+                                        <span class="badge" th:classappend="${
+                                            order.status == T(com.ecommerce.model.Order.OrderStatus).PENDING ? 'bg-warning' : 
+                                            order.status == T(com.ecommerce.model.Order.OrderStatus).PROCESSING ? 'bg-info' :
+                                            order.status == T(com.ecommerce.model.Order.OrderStatus).SHIPPED ? 'bg-primary' :
+                                            order.status == T(com.ecommerce.model.Order.OrderStatus).DELIVERED ? 'bg-success' :
+                                            'bg-danger'}" th:text="${order.status}">Status</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{'/order/' + ${order.id}}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="d-flex justify-content-center mt-4">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${currentPage == 1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/order(page=${currentPage - 1})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/order(page=${i})}" th:text="${i}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/order(page=${currentPage + 1})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

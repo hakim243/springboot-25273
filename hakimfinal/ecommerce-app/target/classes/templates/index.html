@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>Home - Ecommerce-App</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div th:replace="fragments/layout :: alerts"></div>
+    
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold mb-4">Welcome to Ecommerce-App</h1>
+                <p class="lead mb-5">Discover amazing products at great prices</p>
+                <a th:href="@{/shop}" class="btn btn-primary btn-lg px-5">Shop Now</a>
+            </div>
+        </section>
+        
+        <!-- Featured Products Section -->
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Featured Products</h2>
+                
+                <div th:if="${#lists.isEmpty(featuredProducts)}" class="text-center py-5">
+                    <p>No featured products available at the moment.</p>
+                </div>
+                
+                <div th:unless="${#lists.isEmpty(featuredProducts)}" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    <div class="col" th:each="product : ${featuredProducts}">
+                        <div class="card product-card h-100">
+                            <span class="featured-badge">Featured</span>
+                            <img th:src="${product.imageUrl}" th:alt="${product.name}" class="card-img-top" 
+                                 src="/images/products/placeholder.jpg" alt="Product Image">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                                <p class="card-text text-truncate" th:text="${product.description}">Product description...</p>
+                                <p class="price" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{'/product/' + ${product.id}}" class="btn btn-outline-primary">View</a>
+                                    <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                                        <input type="hidden" name="productId" th:value="${product.id}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-cart-plus"></i> Add
+                                        </button>
+                                    </form>
+                                    <a th:href="@{/login}" class="btn btn-primary" sec:authorize="isAnonymous()">
+                                        <i class="fas fa-cart-plus"></i> Add
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Recent Products Section -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5">New Arrivals</h2>
+                
+                <div th:if="${#lists.isEmpty(recentProducts)}" class="text-center py-5">
+                    <p>No recent products available at the moment.</p>
+                </div>
+                
+                <div th:unless="${#lists.isEmpty(recentProducts)}" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    <div class="col" th:each="product : ${recentProducts}">
+                        <div class="card product-card h-100">
+                            <img th:src="${product.imageUrl}" th:alt="${product.name}" class="card-img-top" 
+                                 src="/images/products/placeholder.jpg" alt="Product Image">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${product.name}">Product Name</h5>
+                                <p class="card-text text-truncate" th:text="${product.description}">Product description...</p>
+                                <p class="price" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{'/product/' + ${product.id}}" class="btn btn-outline-primary">View</a>
+                                    <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
+                                        <input type="hidden" name="productId" th:value="${product.id}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-cart-plus"></i> Add
+                                        </button>
+                                    </form>
+                                    <a th:href="@{/login}" class="btn btn-primary" sec:authorize="isAnonymous()">
+                                        <i class="fas fa-cart-plus"></i> Add
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5">
+                    <a th:href="@{/shop}" class="btn btn-outline-primary px-4">View All Products</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-shipping-fast fa-3x text-primary mb-3"></i>
+                                <h5 class="card-title">Fast Shipping</h5>
+                                <p class="card-text">Free shipping on all orders over $50. Quick delivery to your doorstep.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-exchange-alt fa-3x text-primary mb-3"></i>
+                                <h5 class="card-title">Easy Returns</h5>
+                                <p class="card-text">30-day hassle-free return policy. Not satisfied? Get a full refund.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center h-100">
+                            <div class="card-body">
+                                <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                                <h5 class="card-title">24/7 Support</h5>
+                                <p class="card-text">Our customer service team is available 24/7 to assist you.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>Product Detail - ShopSmart</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div th:replace="fragments/layout :: alerts"></div>
+    
+    <div class="content-wrapper py-5">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/shop}">Shop</a></li>
+                    <li class="breadcrumb-item" th:if="${product.category != null}">
+                        <a th:href="@{/shop(category=${product.category.id})}" th:text="${product.category.name}">Category</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" th:text="${product.name}">Product Name</li>
+                </ol>
+            </nav>
+            
+            <div class="row">
+                <!-- Product image -->
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <img th:src="${product.imageUrl}" th:alt="${product.name}" 
+                                 src="/images/products/placeholder.jpg" alt="Product Image"
+                                 class="img-fluid rounded">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product details -->
+                <div class="col-md-7">
+                    <h1 th:text="${product.name}">Product Name</h1>
+                    
+                    <div class="mb-3">
+                        <span th:if="${product.featured}" class="badge bg-warning">Featured</span>
+                        <span th:if="${product.category != null}" class="badge bg-info" th:text="${product.category.name}">Category</span>
+                    </div>
+                    
+                    <h2 class="price mb-4" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}">$0.00</h2>
+                    
+                    <p class="mb-4" th:text="${product.description}">Product description...</p>
+                    
+                    <p th:if="${product.stockQuantity > 0}" class="text-success">
+                        <i class="fas fa-check-circle"></i> In Stock (<span th:text="${product.stockQuantity}">10</span> available)
+                    </p>
+                    <p th:unless="${product.stockQuantity > 0}" class="text-danger">
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                    </p>
+                    
+                    <form th:if="${product.stockQuantity > 0}" th:action="@{/cart/add}" method="post" class="mb-4" sec:authorize="isAuthenticated()">
+                        <input type="hidden" name="productId" th:value="${product.id}">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-auto">
+                                <label for="quantity" class="col-form-label">Quantity:</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" id="quantity" name="quantity" class="form-control" 
+                                       min="1" th:max="${product.stockQuantity}" value="1">
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-cart-plus"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div th:if="${product.stockQuantity > 0}" sec:authorize="isAnonymous()" class="mb-4">
+                        <a th:href="@{/login}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login to Purchase
+                        </a>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4>Product Details</h4>
+                        <ul>
+                            <li>Product ID: <span th:text="${product.id}">1</span></li>
+                            <li th:if="${product.category != null}">Category: <span th:text="${product.category.name}">Category</span></li>
+                            <li>Stock: <span th:text="${product.stockQuantity}">10</span> units</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 

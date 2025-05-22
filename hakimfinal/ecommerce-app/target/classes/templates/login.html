@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head(${pageTitle})">
+    <title>Login - ShopSmart</title>
+</head>
+<body>
+    <header th:replace="fragments/layout :: header"></header>
+    
+    <div class="content-wrapper py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white text-center py-3">
+                            <h4 class="m-0">Login to Your Account</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div th:if="${param.error}" class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Invalid username or password.
+                            </div>
+                            <div th:if="${param.logout}" class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                You have been logged out.
+                            </div>
+                            <div th:if="${successMessage}" class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <span th:text="${successMessage}">Success message</span>
+                            </div>
+                            
+                            <form th:action="@{/login}" method="post">
+                                <div class="form-group mb-3">
+                                    <label for="username" class="form-label">Email Address</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        <input type="email" id="username" name="username" class="form-control" required autofocus>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="password" class="form-label">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" id="password" name="password" class="form-control" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me">
+                                    <label class="form-check-label" for="remember-me">
+                                        Remember me
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid mb-4">
+                                    <button class="btn btn-primary btn-lg" type="submit">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                                    </button>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <p>Don't have an account? <a th:href="@{/register}" class="text-decoration-none">Register here</a></p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html> 
